@@ -3,6 +3,8 @@
 include_once 'src/Constants.php';
 class FinalResult {
     function results($f) {
+        //exception handling for file open functions
+        //we can also use array_map instead of fopen
          try
             {
             if ( !file_exists($f) ) {
@@ -13,37 +15,47 @@ class FinalResult {
             if ( !$d ) {
                  throw new Exception(Constants::fileNotOpenMessage);
             }
-            $h = fgetcsv($d);
+             
+            //removing fixed count looping so that the code is extensible even if more than 16 lines of data is put in the csv
+            $isFirstLine = true;
             $rcs = [];
-            while(!feof($d)) {
-                $r = fgetcsv($d);
-                if(count($r) == 16) {
-                    $amt = !$r[8] || $r[8] == "0" ? 0 : (float) $r[8];
-                    $ban = !$r[6] ? Constants::bankAccountNumberMissingMessage : (int) $r[6];
-                    $bac = !$r[2] ? Constants::bankBranchCodeMissingMessage : $r[2];
-                    $e2e = !$r[10] && !$r[11] ? Constants::bankAccountNumberMissingMessage : $r[10] . $r[11];
+            while (($data = fgetcsv($d)) !== FALSE) 
+            {
+                if(!$isFirstLine){
+                    $amt =  (float) $data[8] ?? "0" ;
+                    $ban = !$data[6] ? Constants::bankAccountNumberMissingMessage : (int) $data[6];
+                    $bac = !$data[2] ? Constants::bankBranchCodeMissingMessage : $data[2];
+                    $e2e = !$data[10] && !$data[11] ? Constants::bankAccountNumberMissingMessage : $data[10] . $data[11];
+                    
                     $rcd = [
-                        "amount" => [
-                            "currency" => $h[0],
-                            "subunits" => (int) ($amt * 100)
-                        ],
-                        "bank_account_name" => str_replace(" ", "_", strtolower($r[7])),
-                        "bank_account_number" => $ban,
-                        "bank_branch_code" => $bac,
-                        "bank_code" => $r[0],
-                        "end_to_end_id" => $e2e,
-                    ];
-                    $rcs[] = $rcd;
+                            "amount" => [
+                                "currency" => $h[0],
+                                "subunits" => (int) ($amt * 100)
+                            ],
+                            "bank_account_name" => str_replace(" ", "_", strtolower($data[7])),
+                            "bank_account_number" => $ban,
+                            "bank_branch_code" => $bac,
+                            "bank_code" => $data[0],
+                            "end_to_end_id" => $e2e,
+                        ];
+                    $rcs[] = $rcd; 
+                } else {
+                    $h = $data;
+                    $isFirstLine = false;
                 }
-        }
-        $rcs = array_filter($rcs);
-        return [
-            "filename" => basename($f),
-            "document" => $d,
-            "failure_code" => $h[1],
-            "failure_message" => $h[2],
-            "records" => $rcs
-        ];
+                
+            }
+            
+            //closing the file
+            fclose($d);
+            $rcs = array_filter($rcs);
+            return [
+                        "filename" => basename($f),
+                        "document" => $d,
+                        "failure_code" => $h[1],
+                        "failure_message" => $h[2],
+                        "records" => $rcs
+                    ];
     } catch ( Exception $e ) {
            return [
                 "filename" => basename($f),
