@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 use PHPUnit\Framework\TestCase; 
-include 'src/FinalResult.php';
-
+include_once 'src/FinalResult.php';
+//replacing include with include_once since we need to include this file only once 
 
 
 final class FinalResultTest extends TestCase
 {
     private $expected_return = [
-        "filename"=>"data_sample.csv",
-        "failure_code"=>"100",
-        "failure_message"=>"All systems go",
+        "filename"=>Constants::sampleCsvName,
+        "failure_code"=>Constants::generalFailureCode,
+        "failure_message"=>Constants::generalFailureMessage,
         "records"=>[
             ["amount"=>["currency"=>"SGD", "subunits"=>0], "bank_account_name"=>"sing_bank", "bank_account_number"=>12345678987, "bank_branch_code"=>"221", "bank_code"=>"1034", "end_to_end_id"=>"Abcdef1226"],
             ["amount"=>["currency"=>"SGD", "subunits"=>0], "bank_account_name"=>"hsbc", "bank_account_number"=>12345678986, "bank_branch_code"=>"Bank branch code missing", "bank_code"=>"1035", "end_to_end_id"=>"Abcdef1498"],
@@ -34,7 +34,10 @@ final class FinalResultTest extends TestCase
     public function testReturnsTheCorrectHash(): void
     {
         $f = new FinalResult();
-        $res = $f->results('tests/support/data_sample.csv');
+        $res = $f->results(Constants::sampleCsvPath);
+        
+        //The below line can be removed if it is being not used anywhere else. 
+        //Since the code snippet is part of a larger code base, it maybe used somewhere and hence not removing it
         unset($res["document"]); 
         $this->assertEquals($res, $this->expected_return);
     }
