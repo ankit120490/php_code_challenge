@@ -1,5 +1,6 @@
 <?php
 
+include_once 'src/Constants.php';
 class FinalResult {
     function results($f) {
         $d = fopen($f, "r");
@@ -9,9 +10,9 @@ class FinalResult {
             $r = fgetcsv($d);
             if(count($r) == 16) {
                 $amt = !$r[8] || $r[8] == "0" ? 0 : (float) $r[8];
-                $ban = !$r[6] ? "Bank account number missing" : (int) $r[6];
-                $bac = !$r[2] ? "Bank branch code missing" : $r[2];
-                $e2e = !$r[10] && !$r[11] ? "End to end id missing" : $r[10] . $r[11];
+                $ban = !$r[6] ? Constants::bankAccountNumberMissingMessage : (int) $r[6];
+                $bac = !$r[2] ? Constants::bankBranchCodeMissingMessage : $r[2];
+                $e2e = !$r[10] && !$r[11] ? Constants::bankAccountNumberMissingMessage : $r[10] . $r[11];
                 $rcd = [
                     "amount" => [
                         "currency" => $h[0],
