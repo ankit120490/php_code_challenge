@@ -6,12 +6,12 @@ class FinalResult {
          try
             {
             if ( !file_exists($f) ) {
-                throw new Exception('File not found.');
+                throw new Exception(Constants::fileNotFoundMessage);
             }
         
             $d = fopen($f, "r");
             if ( !$d ) {
-                throw new Exception('File open failed.');
+                 throw new Exception(Constants::fileNotOpenMessage);
             }
             $h = fgetcsv($d);
             $rcs = [];
