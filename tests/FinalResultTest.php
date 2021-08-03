@@ -7,7 +7,7 @@ include_once 'src/FinalResult.php';
 final class FinalResultTest extends TestCase
 {
     private $expected_return = [
-        "filename"=>Constants::sampleCsvName,
+        "filename"=>Constants::sampleCsvPath,
         "failure_code"=>Constants::generalFailureCode,
         "failure_message"=>Constants::generalFailureMessage,
         "records"=>[
