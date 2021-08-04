@@ -22,10 +22,7 @@ final class FinalResultTest extends TestCase
         //Since the code snippet is part of a larger code base, it maybe used somewhere and hence not removing it
         unset($res["document"]);
         
-        //this check is used to prevent assertEquals check in case of exception where record from csv is not found
-        if(!empty($res['records'])) {
-            $this->assertEquals($res, $this->expected_return);
-        }
+        $this->assertEquals($res, $this->expected_return);
         
     }
 }
