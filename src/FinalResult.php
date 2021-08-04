@@ -57,12 +57,25 @@ class FinalResult {
                         "records" => $rcs
                     ];
     } catch ( Exception $e ) {
+             $rcs = [];
+             $rcd = [
+                        "amount" => [
+                                        "currency" => "",
+                                        "subunits" => 0
+                                    ],
+                        "bank_account_name" => "",
+                        "bank_account_number" => Constants::bankAccountNumberMissingMessage,
+                        "bank_branch_code" => Constants::bankBranchCodeMissingMessage,
+                        "bank_code" => "",
+                        "end_to_end_id" => Constants::bankAccountNumberMissingMessage,
+                        ];
+                    $rcs[] = $rcd;
            return [
                 "filename" => basename($f),
                 "document" => Constants::fileErrorDocumentName,
                 "failure_code" => Constants::fileErrorCode,
                 "failure_message" => $e->getMessage(),
-                "records" => []
+                "records" => $rcs
             ];
         }
     }
